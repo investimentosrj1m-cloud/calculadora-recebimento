@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Calculadora de Recebimento</title>
+
 
 <style>
 
@@ -107,14 +112,17 @@ button:hover {
 }
 
 </style>
+
 </head>
 
 
 <body>
 
+
 <div class="container">
 
 <div class="card">
+
 
 <h1>Calculadora de Recebimento</h1>
 
@@ -162,32 +170,47 @@ RECEBIMENTO DO SALÁRIO
 
 
 <div class="linha">
+
 <span>Bruto (MMO)</span>
+
 <strong id="rBruto"></strong>
+
 </div>
 
 
 <div class="linha">
+
 <span>INSS</span>
+
 <span id="rInss"></span>
+
 </div>
 
 
 <div class="linha">
+
 <span>DAS (8%)</span>
+
 <span id="rDas"></span>
+
 </div>
 
 
 <div class="linha">
+
 <span>IRPF</span>
+
 <span id="rIrrf"></span>
+
 </div>
 
 
 <div class="linha total">
+
 <span>LÍQUIDO DO SALÁRIO</span>
+
 <span id="rLiquido"></span>
+
 </div>
 
 
@@ -197,31 +220,45 @@ RECEBIMENTO DO SALÁRIO
 ===================================== -->
 
 <div class="secao">
+
 1º DEPÓSITO — INÍCIO DO PRÓXIMO MÊS
+
 </div>
 
 
 <div class="linha">
+
 <span>Vale-transporte</span>
+
 <span id="rTransporte"></span>
+
 </div>
 
 
 <div class="linha">
+
 <span>Alimentação / refeição</span>
+
 <span id="rRefeicao"></span>
+
 </div>
 
 
 <div class="linha">
+
 <span>Assistência médica</span>
+
 <span id="rSaude"></span>
+
 </div>
 
 
 <div class="linha total">
+
 <span>1º DEPÓSITO</span>
+
 <span id="rDeposito1"></span>
+
 </div>
 
 
@@ -231,25 +268,36 @@ RECEBIMENTO DO SALÁRIO
 ===================================== -->
 
 <div class="secao">
+
 2º DEPÓSITO
+
 </div>
 
 
 <div class="linha">
+
 <span>Férias</span>
+
 <span id="rFeriasLiquido"></span>
+
 </div>
 
 
 <div class="linha">
+
 <span>13º salário</span>
+
 <span id="rDecimoLiquido"></span>
+
 </div>
 
 
 <div class="linha total">
+
 <span>2º DEPÓSITO</span>
+
 <span id="rDeposito2"></span>
+
 </div>
 
 
@@ -259,37 +307,54 @@ RECEBIMENTO DO SALÁRIO
 ===================================== -->
 
 <div class="secao">
+
 APURAÇÃO DO IRPF
+
 </div>
 
 
 <div class="linha">
+
 <span>Salário bruto</span>
+
 <span id="rBaseSalario"></span>
+
 </div>
 
 
 <div class="linha">
+
 <span>Férias líquidas</span>
+
 <span id="rBaseFerias"></span>
+
 </div>
 
 
 <div class="linha">
+
 <span>13º líquido</span>
+
 <span id="rBaseDecimo"></span>
+
 </div>
 
 
 <div class="linha total">
+
 <span>BASE CONSIDERADA PARA IRPF</span>
+
 <span id="rBaseIR"></span>
+
 </div>
 
 
 <div class="linha">
+
 <span>IRPF estimado</span>
+
 <span id="rIrrfDetalhado"></span>
+
 </div>
 
 
@@ -299,37 +364,54 @@ APURAÇÃO DO IRPF
 ===================================== -->
 
 <div class="secao">
+
 RESUMO
+
 </div>
 
 
 <div class="linha">
+
 <span>Líquido do salário</span>
+
 <span id="rResumoSalario"></span>
+
 </div>
 
 
 <div class="linha">
+
 <span>1º depósito</span>
+
 <span id="rResumoDeposito1"></span>
+
 </div>
 
 
 <div class="linha">
+
 <span>2º depósito</span>
+
 <span id="rResumoDeposito2"></span>
+
 </div>
 
 
 <div class="linha total">
+
 <span>TOTAL EM DINHEIRO</span>
+
 <span id="rTotal"></span>
+
 </div>
 
 
 <div class="linha">
+
 <span>FGTS — depósito separado</span>
+
 <span id="rFgts"></span>
+
 </div>
 
 
@@ -339,25 +421,24 @@ RESUMO
 
 <br><br>
 
-O valor da alimentação pode apresentar divergência
-conforme a operadora. Em alguns casos, como na operadora
-<strong>Triunfo</strong>, o valor poderá ser diferente.
+O valor da alimentação pode apresentar divergência conforme a operadora.
+Em alguns casos, como na operadora <strong>Triunfo</strong>, o valor poderá ser diferente.
 
 <br><br>
 
-O FGTS não é descontado do salário e não entra no valor
-depositado na conta bancária.
+O FGTS não é descontado do salário e não entra no valor depositado na conta bancária.
 
 <br><br>
 
-O IRPF é apresentado como estimativa com base na regra
-definida nesta calculadora.
+O IRPF é apresentado como estimativa com base na regra definida nesta calculadora.
 
 </div>
 
 
 </div>
+
 </div>
+
 </div>
 
 
@@ -401,65 +482,285 @@ function converterNumero(valor) {
 
 
 /* =====================================
-   INSS 2026
+   INSS — TPA / TRABALHADOR AVULSO
+   TABELA 2026
+
+   FAIXAS OFICIAIS:
+
+   Até 1.621,00       = 7,5%
+   1.621,01 a 2.902,84 = 9%
+   2.902,85 a 4.354,27 = 12%
+   4.354,28 a 8.475,55 = 14%
+
+   TETO = 8.475,55
 ===================================== */
 
-function calcularINSS(salario) {
+
+/*
+   Esta função calcula o INSS sobre
+   o acumulado do mês.
+
+   É usada tanto no cálculo consolidado
+   quanto no cálculo acumulado por
+   engajamento.
+*/
+
+function calcularINSSProgressivo(valorBruto) {
+
+    valorBruto = Number(valorBruto) || 0;
+
+
+    if (valorBruto <= 0) {
+
+        return 0;
+
+    }
+
 
     const faixa1 = 1621.00;
+
     const faixa2 = 2902.84;
+
     const faixa3 = 4354.27;
+
     const teto = 8475.55;
+
 
     let inss = 0;
 
 
-    if (salario <= faixa1) {
+
+    /* =================================
+       1ª FAIXA
+    ================================= */
+
+    if (valorBruto <= faixa1) {
 
         inss =
-            salario * 0.075;
+            valorBruto * 0.075;
 
     }
 
-    else if (salario <= faixa2) {
+
+
+    /* =================================
+       2ª FAIXA
+    ================================= */
+
+    else if (valorBruto <= faixa2) {
 
         inss =
-            faixa1 * 0.075 +
-            (salario - faixa1) * 0.09;
+            (faixa1 * 0.075) +
+
+            ((valorBruto - faixa1) * 0.09);
 
     }
 
-    else if (salario <= faixa3) {
+
+
+    /* =================================
+       3ª FAIXA
+    ================================= */
+
+    else if (valorBruto <= faixa3) {
 
         inss =
-            faixa1 * 0.075 +
-            (faixa2 - faixa1) * 0.09 +
-            (salario - faixa2) * 0.12;
+            (faixa1 * 0.075) +
+
+            ((faixa2 - faixa1) * 0.09) +
+
+            ((valorBruto - faixa2) * 0.12);
 
     }
 
-    else if (salario <= teto) {
+
+
+    /* =================================
+       4ª FAIXA
+    ================================= */
+
+    else if (valorBruto <= teto) {
 
         inss =
-            faixa1 * 0.075 +
-            (faixa2 - faixa1) * 0.09 +
-            (faixa3 - faixa2) * 0.12 +
-            (salario - faixa3) * 0.14;
+            (faixa1 * 0.075) +
+
+            ((faixa2 - faixa1) * 0.09) +
+
+            ((faixa3 - faixa2) * 0.12) +
+
+            ((valorBruto - faixa3) * 0.14);
 
     }
+
+
+
+    /* =================================
+       ACIMA DO TETO
+    ================================= */
 
     else {
 
         inss =
-            faixa1 * 0.075 +
-            (faixa2 - faixa1) * 0.09 +
-            (faixa3 - faixa2) * 0.12 +
-            (teto - faixa3) * 0.14;
+            (faixa1 * 0.075) +
+
+            ((faixa2 - faixa1) * 0.09) +
+
+            ((faixa3 - faixa2) * 0.12) +
+
+            ((teto - faixa3) * 0.14);
 
     }
 
 
-    return inss;
+    return Number(
+        inss.toFixed(2)
+    );
+
+}
+
+
+
+/* =====================================
+   INSS — CÁLCULO CONSOLIDADO MENSAL
+
+   Mantém o mesmo nome da função que
+   a calculadora já utilizava.
+
+   Assim, nenhuma outra parte da
+   calculadora precisa ser alterada.
+===================================== */
+
+function calcularINSS(salario) {
+
+    return calcularINSSProgressivo(
+        salario
+    );
+
+}
+
+
+
+/* =====================================
+   INSS — CÁLCULO POR ENGAGEMENTO
+
+   Método OGMO:
+
+   1. Soma o bruto da diária ao acumulado.
+   2. Calcula o INSS sobre o acumulado.
+   3. Calcula o INSS do acumulado anterior.
+   4. Retém somente a diferença.
+   5. Repete para cada engajamento.
+
+   Esta função fica disponível para
+   conferência de holerites/diárias.
+===================================== */
+
+function calcularINSSPorEngajamentos(engajamentos) {
+
+    if (!Array.isArray(engajamentos)) {
+
+        return {
+
+            inssTotal: 0,
+
+            salarioBruto: 0,
+
+            detalhamento: []
+
+        };
+
+    }
+
+
+    let acumuladoBruto = 0;
+
+    let inssAcumuladoAnterior = 0;
+
+    let inssTotal = 0;
+
+    const detalhamento = [];
+
+
+
+    engajamentos.forEach(
+        function(valor, index) {
+
+
+            const diaria =
+                Number(valor) || 0;
+
+
+            acumuladoBruto +=
+                diaria;
+
+
+            const inssAcumuladoAtual =
+                calcularINSSProgressivo(
+                    acumuladoBruto
+                );
+
+
+            const inssDoDia =
+                Number(
+                    (
+                        inssAcumuladoAtual -
+                        inssAcumuladoAnterior
+                    ).toFixed(2)
+                );
+
+
+            inssTotal +=
+                inssDoDia;
+
+
+            inssAcumuladoAnterior =
+                inssAcumuladoAtual;
+
+
+
+            detalhamento.push({
+
+                engajamento:
+                    index + 1,
+
+                brutoDia:
+                    Number(
+                        diaria.toFixed(2)
+                    ),
+
+                acumuladoBruto:
+                    Number(
+                        acumuladoBruto.toFixed(2)
+                    ),
+
+                inssAcumulado:
+                    inssAcumuladoAtual,
+
+                inssDescontado:
+                    inssDoDia
+
+            });
+
+        }
+    );
+
+
+    return {
+
+        salarioBruto:
+            Number(
+                acumuladoBruto.toFixed(2)
+            ),
+
+        inssTotal:
+            Number(
+                inssTotal.toFixed(2)
+            ),
+
+        detalhamento:
+            detalhamento
+
+    };
 
 }
 
@@ -485,7 +786,8 @@ function calcularIRPF(rendimentos) {
     let baseCalculo =
         Math.max(
             0,
-            rendimentos - descontoSimplificado
+            rendimentos -
+            descontoSimplificado
         );
 
 
@@ -532,7 +834,7 @@ function calcularIRPF(rendimentos) {
 
 
     /*
-    REDUÇÃO DE 2026
+       REDUÇÃO DE 2026
     */
 
     let reducao = 0;
@@ -594,7 +896,9 @@ function calcular() {
 
     if (bruto <= 0) {
 
-        alert("Informe o valor bruto.");
+        alert(
+            "Informe o valor bruto."
+        );
 
         return;
 
@@ -603,7 +907,9 @@ function calcular() {
 
     if (trabalhos <= 0) {
 
-        alert("Informe o número de trabalhos.");
+        alert(
+            "Informe o número de trabalhos."
+        );
 
         return;
 
@@ -630,11 +936,13 @@ function calcular() {
 
 
     /* =====================================
-       INSS
+       INSS — TPA
     ===================================== */
 
     const inss =
-        calcularINSS(bruto);
+        calcularINSS(
+            bruto
+        );
 
 
 
@@ -747,8 +1055,6 @@ function calcular() {
     /* =====================================
        BASE DO IRPF
 
-       CONFORME SUA REGRA:
-
        SALÁRIO BRUTO
        +
        FÉRIAS LÍQUIDAS
@@ -763,9 +1069,10 @@ function calcular() {
         decimoLiquido;
 
 
-
     const irpf =
-        calcularIRPF(baseIR);
+        calcularIRPF(
+            baseIR
+        );
 
 
 
@@ -809,105 +1116,156 @@ function calcular() {
        EXIBIR RESULTADOS
     ===================================== */
 
-    document.getElementById("rBruto").innerText =
+    document.getElementById(
+        "rBruto"
+    ).innerText =
         dinheiro(bruto);
 
 
-    document.getElementById("rInss").innerText =
-        "− " + dinheiro(inss);
+    document.getElementById(
+        "rInss"
+    ).innerText =
+        "− " +
+        dinheiro(inss);
 
 
-    document.getElementById("rDas").innerText =
-        "− " + dinheiro(das);
+    document.getElementById(
+        "rDas"
+    ).innerText =
+        "− " +
+        dinheiro(das);
 
 
-    document.getElementById("rIrrf").innerText =
-        "− " + dinheiro(irpf);
+    document.getElementById(
+        "rIrrf"
+    ).innerText =
+        "− " +
+        dinheiro(irpf);
 
 
-    document.getElementById("rLiquido").innerText =
+    document.getElementById(
+        "rLiquido"
+    ).innerText =
         dinheiro(liquidoSalario);
 
 
 
-    document.getElementById("rTransporte").innerText =
+    document.getElementById(
+        "rTransporte"
+    ).innerText =
         dinheiro(transporte);
 
 
-    document.getElementById("rRefeicao").innerText =
+    document.getElementById(
+        "rRefeicao"
+    ).innerText =
         dinheiro(refeicao);
 
 
-    document.getElementById("rSaude").innerText =
+    document.getElementById(
+        "rSaude"
+    ).innerText =
         dinheiro(saude);
 
 
-    document.getElementById("rDeposito1").innerText =
+    document.getElementById(
+        "rDeposito1"
+    ).innerText =
         dinheiro(deposito1);
 
 
 
-    document.getElementById("rFeriasLiquido").innerText =
+    document.getElementById(
+        "rFeriasLiquido"
+    ).innerText =
         dinheiro(feriasLiquido);
 
 
-    document.getElementById("rDecimoLiquido").innerText =
+    document.getElementById(
+        "rDecimoLiquido"
+    ).innerText =
         dinheiro(decimoLiquido);
 
 
-    document.getElementById("rDeposito2").innerText =
+    document.getElementById(
+        "rDeposito2"
+    ).innerText =
         dinheiro(deposito2);
 
 
 
-    document.getElementById("rBaseSalario").innerText =
+    document.getElementById(
+        "rBaseSalario"
+    ).innerText =
         dinheiro(bruto);
 
 
-    document.getElementById("rBaseFerias").innerText =
+    document.getElementById(
+        "rBaseFerias"
+    ).innerText =
         dinheiro(feriasLiquido);
 
 
-    document.getElementById("rBaseDecimo").innerText =
+    document.getElementById(
+        "rBaseDecimo"
+    ).innerText =
         dinheiro(decimoLiquido);
 
 
-    document.getElementById("rBaseIR").innerText =
+    document.getElementById(
+        "rBaseIR"
+    ).innerText =
         dinheiro(baseIR);
 
 
-    document.getElementById("rIrrfDetalhado").innerText =
+    document.getElementById(
+        "rIrrfDetalhado"
+    ).innerText =
         dinheiro(irpf);
 
 
 
-    document.getElementById("rResumoSalario").innerText =
+    document.getElementById(
+        "rResumoSalario"
+    ).innerText =
         dinheiro(liquidoSalario);
 
 
-    document.getElementById("rResumoDeposito1").innerText =
+    document.getElementById(
+        "rResumoDeposito1"
+    ).innerText =
         dinheiro(deposito1);
 
 
-    document.getElementById("rResumoDeposito2").innerText =
+    document.getElementById(
+        "rResumoDeposito2"
+    ).innerText =
         dinheiro(deposito2);
 
 
-    document.getElementById("rTotal").innerText =
+    document.getElementById(
+        "rTotal"
+    ).innerText =
         dinheiro(total);
 
 
-    document.getElementById("rFgts").innerText =
+    document.getElementById(
+        "rFgts"
+    ).innerText =
         dinheiro(fgts);
 
 
 
-    document.getElementById("resultado").style.display =
+    document.getElementById(
+        "resultado"
+    ).style.display =
         "block";
 
 }
 
 </script>
 
+
 </body>
+
 </html>
