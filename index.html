@@ -3,11 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Calculadora de Recebimento</title>
 
 <style>
-
 * {
     box-sizing: border-box;
 }
@@ -66,10 +64,6 @@ button {
     cursor: pointer;
 }
 
-button:hover {
-    background: #12578c;
-}
-
 .resultado {
     display: none;
     margin-top: 25px;
@@ -82,6 +76,12 @@ button:hover {
     margin-bottom: 8px;
     border-bottom: 2px solid #ddd;
     padding-bottom: 6px;
+}
+
+.subsecao {
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
 }
 
 .linha {
@@ -106,29 +106,17 @@ button:hover {
     font-size: 13px;
     line-height: 1.4;
 }
-
-.erro {
-    color: #b00020;
-    font-weight: bold;
-    margin-top: 10px;
-}
-
 </style>
 </head>
 
 <body>
 
 <div class="container">
-
 <div class="card">
 
 <h1>Calculadora de Recebimento</h1>
 
-
-<label for="bruto">
-Valor bruto (MMO)
-</label>
-
+<label for="bruto">Valor bruto (MMO)</label>
 <input
     type="text"
     id="bruto"
@@ -136,11 +124,7 @@ Valor bruto (MMO)
     inputmode="decimal"
 >
 
-
-<label for="trabalhos">
-Número de trabalhos
-</label>
-
+<label for="trabalhos">Número de trabalhos</label>
 <input
     type="number"
     id="trabalhos"
@@ -149,465 +133,313 @@ Número de trabalhos
     placeholder="Ex.: 12"
 >
 
-
-<button onclick="calcular()">
-CALCULAR
-</button>
-
-
-<div id="erro" class="erro"></div>
-
+<button onclick="calcular()">CALCULAR</button>
 
 <div id="resultado" class="resultado">
 
+<!-- SALÁRIO -->
 
-<!-- RECEBIMENTO DO MÊS -->
-
-<div class="secao">
-RECEBIMENTO DO MÊS
-</div>
-
+<div class="secao">RECEBIMENTO DO SALÁRIO</div>
 
 <div class="linha">
-
-<span>
-Bruto (MMO)
-</span>
-
+<span>Bruto (MMO)</span>
 <strong id="rBruto"></strong>
-
 </div>
 
-
 <div class="linha">
-
-<span>
-INSS
-</span>
-
+<span>INSS</span>
 <span id="rInss"></span>
-
 </div>
 
-
 <div class="linha">
-
-<span>
-DAS (8%)
-</span>
-
+<span>DAS (8%)</span>
 <span id="rDas"></span>
-
 </div>
 
-
 <div class="linha">
-
-<span>
-Assistência médica (6%)
-</span>
-
+<span>Assistência médica — 6% da DAS</span>
 <span id="rSaude"></span>
-
 </div>
-
-
-<div class="linha">
-
-<span>
-Restante da DAS (2%)
-</span>
-
-<span id="rDasRestante"></span>
-
-</div>
-
 
 <div class="linha total">
-
-<span>
-LÍQUIDO DO MÊS
-</span>
-
+<span>LÍQUIDO DO SALÁRIO</span>
 <span id="rLiquido"></span>
-
 </div>
 
 
-
-<!-- RECEBÍVEIS -->
+<!-- 1º DEPÓSITO -->
 
 <div class="secao">
-
-RECEBÍVEIS NO INÍCIO DO PRÓXIMO MÊS
-
+1º DEPÓSITO — INÍCIO DO PRÓXIMO MÊS
 </div>
 
-
 <div class="linha">
-
-<span>
-Vale-transporte
-</span>
-
+<span>Vale-transporte</span>
 <span id="rTransporte"></span>
-
 </div>
 
-
 <div class="linha">
-
-<span>
-Alimentação / refeição
-</span>
-
+<span>Alimentação / refeição</span>
 <span id="rRefeicao"></span>
-
 </div>
-
 
 <div class="linha">
-
-<span>
-Férias
-</span>
-
-<span id="rFerias"></span>
-
+<span>Assistência médica</span>
+<span id="rSaudeRecebivel"></span>
 </div>
-
-
-<div class="linha">
-
-<span>
-13º salário
-</span>
-
-<span id="rDecimo"></span>
-
-</div>
-
 
 <div class="linha total">
-
-<span>
-RECEBÍVEIS
-</span>
-
-<span id="rRecebiveis"></span>
-
+<span>1º DEPÓSITO</span>
+<span id="rDeposito1"></span>
 </div>
 
 
-
-<!-- FGTS -->
+<!-- 2º DEPÓSITO -->
 
 <div class="secao">
-
-FGTS
-
+2º DEPÓSITO
 </div>
-
 
 <div class="linha">
-
-<span>
-FGTS
-</span>
-
-<span id="rFgts"></span>
-
+<span>Férias — líquido</span>
+<span id="rFerias"></span>
 </div>
 
+<div class="linha">
+<span>13º salário — líquido</span>
+<span id="rDecimo"></span>
+</div>
 
 <div class="linha total">
-
-<span>
-TOTAL RECEBIDO
-</span>
-
-<span id="rTotal"></span>
-
+<span>2º DEPÓSITO</span>
+<span id="rDeposito2"></span>
 </div>
 
 
+<!-- TOTAL -->
 
-<!-- AVISO -->
+<div class="secao">RESUMO</div>
+
+<div class="linha total">
+<span>TOTAL EM DINHEIRO</span>
+<span id="rTotal"></span>
+</div>
+
+<div class="linha">
+<span>FGTS — depósito separado</span>
+<span id="rFgts"></span>
+</div>
+
 
 <div class="aviso">
-
-<strong>Atenção:</strong>
-
-O valor da alimentação pode apresentar divergência
-conforme a operadora. Em alguns casos, como na operadora
-<strong>Triunfo</strong>, o valor poderá ser diferente.
-
+<strong>Atenção:</strong> o valor da alimentação pode apresentar
+divergência conforme a operadora. Em alguns casos, como na
+operadora Triunfo, o valor poderá ser diferente.
 <br><br>
-
 O FGTS não é descontado do salário e não entra no valor
 depositado na conta bancária.
-
-</div>
-
-
 </div>
 
 </div>
-
+</div>
 </div>
 
 
 <script>
 
-
-/* =========================
-   FORMATAÇÃO DE VALORES
-========================= */
-
 function dinheiro(valor) {
-
     return valor.toLocaleString("pt-BR", {
-
         style: "currency",
-
         currency: "BRL"
-
     });
-
 }
 
 
-
-/* =========================
-   CONVERTER VALOR DIGITADO
-========================= */
-
 function converterNumero(valor) {
-
     valor = valor
         .replace(/\s/g, "")
         .replace(/\./g, "")
         .replace(",", ".");
 
     return parseFloat(valor) || 0;
-
 }
 
 
-
-/* =========================
-   CALCULADORA
-========================= */
-
 function calcular() {
 
-
     const bruto = converterNumero(
-
         document.getElementById("bruto").value
-
     );
 
-
     const trabalhos = parseInt(
-
         document.getElementById("trabalhos").value
-
     ) || 0;
 
 
-    const erro = document.getElementById("erro");
-
-
     if (bruto <= 0) {
-
-        erro.innerText =
-            "Informe o valor bruto.";
-
+        alert("Informe o valor bruto.");
         return;
-
     }
 
 
-    if (trabalhos < 0) {
-
-        erro.innerText =
-            "Informe um número válido de trabalhos.";
-
-        return;
-
-    }
-
-
-    erro.innerText = "";
-
-
-
-    /* =========================
-       DAS
-       8% DO BRUTO
-    ========================= */
+    /*
+    ================================
+    DAS
+    ================================
+    */
 
     const das = bruto * 0.08;
 
-
-
-    /* =========================
-       ASSISTÊNCIA MÉDICA
-       6% DO BRUTO
-       JÁ INCLUÍDA NA DAS
-    ========================= */
+    /*
+    Assistência médica:
+    6% do bruto.
+    Já está dentro da DAS.
+    */
 
     const saude = bruto * 0.06;
 
 
-
-    /* =========================
-       RESTANTE DA DAS
-       2%
-    ========================= */
-
-    const dasRestante = bruto * 0.02;
-
-
-
-    /* =========================
-       INSS
-
-       Referência utilizada:
-       Junho/2026
-
-       Bruto:
-       R$ 3.764,66
-
-       INSS:
-       R$ 395,09
-    ========================= */
+    /*
+    ================================
+    INSS
+    ================================
+    Referência do contracheque de junho:
+    Bruto: 3.764,66
+    INSS: 395,09
+    */
 
     const percentualInss =
         395.09 / 3764.66;
-
 
     const inss =
         bruto * percentualInss;
 
 
-
-    /* =========================
-       LÍQUIDO
-    ========================= */
+    /*
+    ================================
+    LÍQUIDO DO SALÁRIO
+    ================================
+    */
 
     const liquido =
         bruto - inss - das;
 
 
-
-    /* =========================
-       TRANSPORTE
-
-       R$ 9,96 POR TRABALHO
-    ========================= */
+    /*
+    ================================
+    VALORES POR TRABALHO
+    ================================
+    */
 
     const transporte =
         trabalhos * 9.96;
-
-
-
-    /* =========================
-       ALIMENTAÇÃO / REFEIÇÃO
-
-       R$ 17,82 POR TRABALHO
-    ========================= */
 
     const refeicao =
         trabalhos * 17.82;
 
 
+    /*
+    ================================
+    1º DEPÓSITO
 
-    /* =========================
-       FÉRIAS
+    Transporte + alimentação +
+    assistência médica
+    ================================
+    */
 
-       PROJEÇÃO BASEADA
-       NO CONTRACHEQUE DE JUNHO
-    ========================= */
+    const deposito1 =
+        transporte +
+        refeicao +
+        saude;
 
-    const ferias =
+
+    /*
+    ================================
+    FÉRIAS
+
+    Referência junho:
+    Bruto: 456,25
+    Líquido: 380,37
+    ================================
+    */
+
+    const feriasBruto =
         bruto * (456.25 / 3764.66);
 
+    const feriasLiquido =
+        feriasBruto * (380.37 / 456.25);
 
 
-    /* =========================
-       13º
+    /*
+    ================================
+    13º
 
-       PROJEÇÃO BASEADA
-       NO CONTRACHEQUE DE JUNHO
-    ========================= */
+    Referência junho:
+    Bruto: 342,22
+    Líquido: 291,71
+    ================================
+    */
 
-    const decimo =
+    const decimoBruto =
         bruto * (342.22 / 3764.66);
 
+    const decimoLiquido =
+        decimoBruto * (291.71 / 342.22);
 
 
-    /* =========================
-       FGTS
+    /*
+    ================================
+    2º DEPÓSITO
+    ================================
+    */
 
-       REFERÊNCIA DO CONTRACHEQUE
-       DE JUNHO
-    ========================= */
+    const deposito2 =
+        feriasLiquido +
+        decimoLiquido;
+
+
+    /*
+    ================================
+    TOTAL EM DINHEIRO
+    ================================
+    */
+
+    const total =
+        liquido +
+        deposito1 +
+        deposito2;
+
+
+    /*
+    ================================
+    FGTS
+
+    Referência junho:
+    365,05
+    ================================
+    */
 
     const fgts =
         bruto * (365.05 / 3764.66);
 
 
-
-    /* =========================
-       RECEBÍVEIS
-       DO PRÓXIMO MÊS
-    ========================= */
-
-    const recebiveis =
-
-        transporte +
-        refeicao +
-        ferias +
-        decimo;
-
-
-
-    /* =========================
-       TOTAL RECEBIDO
-    ========================= */
-
-    const total =
-
-        liquido +
-        recebiveis;
-
-
-
-    /* =========================
-       MOSTRAR RESULTADOS
-    ========================= */
+    /*
+    ================================
+    EXIBIR
+    ================================
+    */
 
     document.getElementById("rBruto").innerText =
         dinheiro(bruto);
 
-
     document.getElementById("rInss").innerText =
         "− " + dinheiro(inss);
-
 
     document.getElementById("rDas").innerText =
         "− " + dinheiro(das);
 
-
     document.getElementById("rSaude").innerText =
         dinheiro(saude);
-
-
-    document.getElementById("rDasRestante").innerText =
-        dinheiro(dasRestante);
-
 
     document.getElementById("rLiquido").innerText =
         dinheiro(liquido);
@@ -616,34 +448,35 @@ function calcular() {
     document.getElementById("rTransporte").innerText =
         dinheiro(transporte);
 
-
     document.getElementById("rRefeicao").innerText =
         dinheiro(refeicao);
 
+    document.getElementById("rSaudeRecebivel").innerText =
+        dinheiro(saude);
+
+    document.getElementById("rDeposito1").innerText =
+        dinheiro(deposito1);
+
 
     document.getElementById("rFerias").innerText =
-        dinheiro(ferias);
-
+        dinheiro(feriasLiquido);
 
     document.getElementById("rDecimo").innerText =
-        dinheiro(decimo);
+        dinheiro(decimoLiquido);
 
-
-    document.getElementById("rRecebiveis").innerText =
-        dinheiro(recebiveis);
-
-
-    document.getElementById("rFgts").innerText =
-        dinheiro(fgts);
+    document.getElementById("rDeposito2").innerText =
+        dinheiro(deposito2);
 
 
     document.getElementById("rTotal").innerText =
         dinheiro(total);
 
+    document.getElementById("rFgts").innerText =
+        dinheiro(fgts);
+
 
     document.getElementById("resultado").style.display =
         "block";
-
 }
 
 </script>
