@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Recebimento</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f4f7;
+    color: #222;
+}
+
+.container {
+    max-width: 520px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+}
+
+h1 {
+    text-align: center;
+    margin-top: 0;
+    font-size: 25px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-top: 18px;
+    margin-bottom: 7px;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 14px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    background: #1769aa;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #12578c;
+}
+
+.resultado {
+    display: none;
+    margin-top: 25px;
+}
+
+.secao {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 22px;
+    margin-bottom: 8px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 6px;
+}
+
+.linha {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid #eee;
+    gap: 10px;
+}
+
+.total {
+    font-weight: bold;
+    font-size: 20px;
+    padding-top: 13px;
+}
+
+.aviso {
+    margin-top: 20px;
+    padding: 12px;
+    background: #fff8df;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.erro {
+    color: #b00020;
+    font-weight: bold;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+
+<h1>Calculadora de Recebimento</h1>
+
+<label for="bruto">Valor bruto (MMO)</label>
+<input
+    type="text"
+    id="bruto"
+    placeholder="Ex.: 3.251,83"
+    inputmode="decimal"
+>
+
+<label for="trabalhos">Número de trabalhos</label>
+<input
+    type="number"
+    id="trabalhos"
+    min="0"
+    step="1"
+    placeholder="Ex.: 12"
+>
+
+<button onclick="calcular()">CALCULAR</button>
+
+<div id="erro" class="erro"></div>
+
+<div id="resultado" class="resultado">
+
+    <div class="secao">RECEBIMENTO DO MÊS</div>
+
+    <div class="linha">
+        <span>Bruto (MMO)</span>
+        <strong id="rBruto"></strong>
+    </div>
+
+    <div class="linha">
+        <span>INSS</span>
+        <span id="rInss"></span>
+    </div>
+
+    <div class="linha">
+        <span>DAS (8%)</span>
+        <span id="rDas"></span>
+    </div>
+
+    <div class="linha">
+        <span>Assistência médica (6%)</span>
+        <span id="rSaude"></span>
+    </div>
+
+    <div class="linha">
+        <span>Restante da DAS (2%)</span>
+        <span id="rDasRestante"></span>
+    </div>
+
+    <div class="linha total">
+        <span>LÍQUIDO DO MÊS</span>
+        <span id="rLiquido"></span>
+    </div>
+
+
+    <div class="secao">RECEBÍVEIS NO INÍCIO DO PRÓXIMO MÊS</div>
+
+    <div class="linha">
+        <span>Vale-transporte</span>
+        <span id="rTransporte"></span>
+    </div>
+
+    <div class="linha">
+        <span>Alimentação / refeição</span>
+        <span id="rRefeicao"></span>
+    </div>
+
+    <div class="linha">
+        <span>Férias</span>
+        <span id="rFerias"></span>
+    </div>
+
+    <div class="linha">
+        <span>13º salário</span>
+        <span id="rDecimo"></span>
+    </div>
+
+    <div class="linha total">
+        <span>RECEBÍVEIS</span>
+        <span id="rRecebiveis"></span>
+    </div>
+
+
+    <div class="secao">FGTS</div>
+
+    <div class="linha">
+        <span>FGTS</span>
+        <span id="rFgts"></span>
+    </div>
+
+    <div class="linha total">
+        <span>TOTAL RECEBIDO</span>
+        <span id="rTotal"></span>
+    </div>
+
+    <div class="aviso">
+        <strong>Atenção:</strong> o valor do vale-transporte pode apresentar
+        divergências conforme a operadora e os valores praticados no período.
+        <br><br>
+        O FGTS não é descontado do seu salário e não entra no valor depositado
+        na sua conta bancária.
+    </div>
+
+</div>
+
+</div>
+</div>
+
+
+<script>
+
+function dinheiro(valor) {
+    return valor.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+
+function converterNumero(valor) {
+
+    valor = valor
+        .replace(/\s/g, "")
+        .replace(/\./g, "")
+        .replace(",", ".");
+
+    return parseFloat(valor) || 0;
+}
+
+
+function calcular() {
+
+    const bruto = converterNumero(
+        document.getElementById("bruto").value
+    );
+
+    const trabalhos = parseInt(
+        document.getElementById("trabalhos").value
+    ) || 0;
+
+    const erro = document.getElementById("erro");
+
+    if (bruto <= 0) {
+        erro.innerText = "Informe o valor bruto.";
+        return;
+    }
+
+    if (trabalhos < 0) {
+        erro.innerText = "Informe um número válido de trabalhos.";
+        return;
+    }
+
+    erro.innerText = "";
+
+
+    /*
+       REGRAS DEFINIDAS A PARTIR DOS CONTRACHEQUES
+    */
+
+    // DAS = 8% do bruto
+    const das = bruto * 0.08;
+
+    // Assistência médica = 6% do bruto
+    // Já está dentro da DAS
+    const saude = bruto * 0.06;
+
+    // Restante da DAS = 2%
+    const dasRestante = bruto * 0.02;
+
+
+    /*
+       INSS
+       Referência utilizada:
+       Junho/2026:
+       R$ 3.764,66 bruto
+       R$ 395,09 INSS
+    */
+
+    const percentualInss = 395.09 / 3764.66;
+
+    const inss = bruto * percentualInss;
+
+
+    // Líquido
+    const liquido = bruto - inss - das;
+
+
+    /*
+       VALORES POR TRABALHO
+    */
+
+    const transporte = trabalhos * 9.96;
+
+    const refeicao = trabalhos * 17.82;
+
+
+    /*
+       FÉRIAS E 13º
+       Projeção baseada no contracheque de junho.
+    */
+
+    const ferias = bruto * (456.25 / 3764.66);
+
+    const decimo = bruto * (342.22 / 3764.66);
+
+
+    /*
+       FGTS
+       Referência do contracheque de junho.
+    */
+
+    const fgts = bruto * (365.05 / 3764.66);
+
+
+    // Recebíveis no mês seguinte
+    const recebiveis =
+        transporte +
+        refeicao +
+        ferias +
+        decimo;
+
+
+    // Total efetivamente recebido em dinheiro
+    const total =
+        liquido +
+        recebiveis;
+
+
+    /*
+       MOSTRAR RESULTADOS
+    */
+
+    document.getElementById("rBruto").innerText =
+        dinheiro(bruto);
+
+    document.getElementById("rInss").innerText =
+        "− " + dinheiro(inss);
+
+    document.getElementById("rDas").innerText =
+        "− " + dinheiro(das);
+
+    document.getElementById("rSaude").innerText =
+        dinheiro(saude);
+
+    document.getElementById("rDasRestante").innerText =
+        dinheiro(dasRestante);
+
+    document.getElementById("rLiquido").innerText =
+        dinheiro(liquido);
+
+    document.getElementById("rTransporte").innerText =
+        dinheiro(transporte);
+
+    document.getElementById("rRefeicao").innerText =
+        dinheiro(refeicao);
+
+    document.getElementById("rFerias").innerText =
+        dinheiro(ferias);
+
+    document.getElementById("rDecimo").innerText =
+        dinheiro(decimo);
+
+    document.getElementById("rRecebiveis").innerText =
+        dinheiro(recebiveis);
+
+    document.getElementById("rFgts").innerText =
+        dinheiro(fgts);
+
+    document.getElementById("rTotal").innerText =
+        dinheiro(total);
+
+
+    document.getElementById("resultado").style.display =
+        "block";
+}
+
+</script>
+
+</body>
+</html>
