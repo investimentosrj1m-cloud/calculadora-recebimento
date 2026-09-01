@@ -1,0 +1,2600 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Calculadora de Recebimento TPA 2026</title>
+
+
+<!-- PDF.JS PARA LEITURA DO EXTRATO -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f4f7;
+    color: #222;
+}
+
+.container {
+    max-width: 540px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.10);
+}
+
+h1 {
+    text-align: center;
+    margin-top: 0;
+    font-size: 25px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-top: 18px;
+    margin-bottom: 7px;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+input[type="file"] {
+    font-size: 14px;
+    background: #fafafa;
+}
+
+button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 14px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    background: #1769aa;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #12578c;
+}
+
+.resultado {
+    display: none;
+    margin-top: 25px;
+}
+
+.secao {
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 25px;
+    margin-bottom: 8px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 6px;
+}
+
+.linha {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid #eee;
+    gap: 15px;
+}
+
+.linha span:last-child,
+.linha strong:last-child {
+    text-align: right;
+}
+
+.total {
+    font-weight: bold;
+    font-size: 19px;
+    padding-top: 13px;
+}
+
+.aviso {
+    margin-top: 20px;
+    padding: 12px;
+    background: #fff8df;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.info {
+    margin-top: 15px;
+    padding: 12px;
+    background: #eef6ff;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.sucesso {
+    background: #eaf8ed;
+}
+
+.alerta {
+    background: #fff1f1;
+}
+
+.pequeno {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.engajamentos {
+    margin-top: 10px;
+    max-height: 220px;
+    overflow-y: auto;
+    font-size: 13px;
+}
+
+.engajamento {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+<div class="card">
+
+
+<h1>
+Calculadora de Recebimento
+</h1>
+
+
+<!-- =====================================
+     EXTRATO
+===================================== -->
+
+<label for="extrato">
+Extrato / contracheque — opcional
+</label>
+
+<input
+    type="file"
+    id="extrato"
+    accept=".pdf,.txt"
+>
+
+<div class="pequeno">
+Você pode informar o bruto manualmente ou anexar o extrato.
+</div>
+
+
+<div
+    id="statusExtrato"
+    class="info"
+    style="display:none;"
+>
+</div>
+
+
+<!-- =====================================
+     BRUTO
+===================================== -->
+
+<label for="bruto">
+
+Valor bruto (MMO)
+
+</label>
+
+
+<input
+    type="text"
+    id="bruto"
+    placeholder="Ex.: 5.076,05"
+    inputmode="decimal"
+>
+
+
+<!-- =====================================
+     TRABALHOS
+===================================== -->
+
+<label for="trabalhos">
+
+Número de trabalhos
+
+</label>
+
+
+<input
+    type="number"
+    id="trabalhos"
+    min="0"
+    step="1"
+    placeholder="Ex.: 10"
+>
+
+
+<button onclick="calcular()">
+
+CALCULAR
+
+</button>
+
+
+
+<div id="resultado" class="resultado">
+
+
+
+<!-- =====================================
+     SALÁRIO
+===================================== -->
+
+<div class="secao">
+
+RECEBIMENTO DO SALÁRIO
+
+</div>
+
+
+<div class="linha">
+
+<span>Bruto (MMO)</span>
+
+<strong id="rBruto"></strong>
+
+</div>
+
+
+<div class="linha">
+
+<span>INSS</span>
+
+<span id="rInss"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>DAS (8%)</span>
+
+<span id="rDas"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>IRPF</span>
+
+<span id="rIrrf"></span>
+
+</div>
+
+
+<div class="linha total">
+
+<span>LÍQUIDO DO SALÁRIO</span>
+
+<span id="rLiquido"></span>
+
+</div>
+
+
+
+<!-- =====================================
+     INSS DETALHADO
+===================================== -->
+
+<div class="secao">
+
+APURAÇÃO DO INSS — TPA / OGMO
+
+</div>
+
+
+<div class="linha">
+
+<span>Método utilizado</span>
+
+<span id="rMetodoInss"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>INSS consolidado</span>
+
+<span id="rInssConsolidado"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>INSS pelo método OGMO</span>
+
+<span id="rInssOgmo"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>INSS informado no extrato</span>
+
+<span id="rInssExtrato"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>Diferença</span>
+
+<span id="rDiferencaInss"></span>
+
+</div>
+
+
+<div
+    id="detalhamentoOgmo"
+    class="info"
+    style="display:none;"
+>
+
+<strong>Detalhamento dos engajamentos</strong>
+
+<div
+    id="listaEngajamentos"
+    class="engajamentos"
+></div>
+
+</div>
+
+
+
+<!-- =====================================
+     1º DEPÓSITO
+===================================== -->
+
+<div class="secao">
+
+1º DEPÓSITO — INÍCIO DO PRÓXIMO MÊS
+
+</div>
+
+
+<div class="linha">
+
+<span>Vale-transporte</span>
+
+<span id="rTransporte"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>Alimentação / refeição</span>
+
+<span id="rRefeicao"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>Assistência médica</span>
+
+<span id="rSaude"></span>
+
+</div>
+
+
+<div class="linha total">
+
+<span>1º DEPÓSITO</span>
+
+<span id="rDeposito1"></span>
+
+</div>
+
+
+
+<!-- =====================================
+     2º DEPÓSITO
+===================================== -->
+
+<div class="secao">
+
+2º DEPÓSITO
+
+</div>
+
+
+<div class="linha">
+
+<span>Férias</span>
+
+<span id="rFeriasLiquido"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>13º salário</span>
+
+<span id="rDecimoLiquido"></span>
+
+</div>
+
+
+<div class="linha total">
+
+<span>2º DEPÓSITO</span>
+
+<span id="rDeposito2"></span>
+
+</div>
+
+
+
+<!-- =====================================
+     SOMATÓRIO DOS DEPÓSITOS
+===================================== -->
+
+<div class="secao">
+
+SOMATÓRIO DOS DEPÓSITOS
+
+</div>
+
+
+<div class="linha total">
+
+<span>1º + 2º DEPÓSITO</span>
+
+<span id="rSomaDepositos"></span>
+
+</div>
+
+
+
+<!-- =====================================
+     IRPF
+===================================== -->
+
+<div class="secao">
+
+APURAÇÃO DO IRPF
+
+</div>
+
+
+<div class="linha">
+
+<span>Salário bruto</span>
+
+<span id="rBaseSalario"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>Férias líquidas</span>
+
+<span id="rBaseFerias"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>13º líquido</span>
+
+<span id="rBaseDecimo"></span>
+
+</div>
+
+
+<div class="linha total">
+
+<span>BASE CONSIDERADA PARA IRPF</span>
+
+<span id="rBaseIR"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>IRPF calculado</span>
+
+<span id="rIrrfDetalhado"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>IRRF informado no extrato</span>
+
+<span id="rIrrfExtrato"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>Diferença IRRF</span>
+
+<span id="rDiferencaIrrf"></span>
+
+</div>
+
+
+
+<!-- =====================================
+     RESUMO
+===================================== -->
+
+<div class="secao">
+
+RESUMO
+
+</div>
+
+
+<div class="linha">
+
+<span>Líquido do salário</span>
+
+<span id="rResumoSalario"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>1º depósito</span>
+
+<span id="rResumoDeposito1"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>2º depósito</span>
+
+<span id="rResumoDeposito2"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>1º + 2º depósitos</span>
+
+<span id="rResumoSomaDepositos"></span>
+
+</div>
+
+
+<div class="linha total">
+
+<span>TOTAL EM DINHEIRO</span>
+
+<span id="rTotal"></span>
+
+</div>
+
+
+<div class="linha">
+
+<span>FGTS — depósito separado</span>
+
+<span id="rFgts"></span>
+
+</div>
+
+
+
+<div class="aviso">
+
+<strong>Observações:</strong>
+
+<br><br>
+
+O valor da alimentação pode apresentar divergência
+conforme a operadora. Em alguns casos, como na operadora
+<strong>Triunfo</strong>, o valor poderá ser diferente.
+
+<br><br>
+
+O FGTS não é descontado do salário e não entra no valor
+depositado na conta bancária.
+
+<br><br>
+
+O cálculo do INSS apresenta o método consolidado e,
+quando o extrato fornece os valores individuais de
+engajamento, também apresenta a simulação acumulada
+fatura a fatura.
+
+<br><br>
+
+O IRPF é calculado considerando a regra definida na
+calculadora: salário bruto + férias líquidas + 13º líquido.
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+
+/* =====================================
+   CONFIGURAÇÃO PDF.JS
+===================================== */
+
+if (window.pdfjsLib) {
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+}
+
+
+
+/* =====================================
+   VARIÁVEIS DO EXTRATO
+===================================== */
+
+let dadosExtrato = {
+
+    bruto: null,
+
+    inss: null,
+
+    irrf: null,
+
+    feriasLiquido: null,
+
+    decimoLiquido: null,
+
+    engajamentos: []
+
+};
+
+
+
+/* =====================================
+   FORMATAÇÃO
+===================================== */
+
+function dinheiro(valor) {
+
+    valor = Number(valor) || 0;
+
+    return valor.toLocaleString(
+        "pt-BR",
+        {
+            style: "currency",
+            currency: "BRL"
+        }
+    );
+
+}
+
+
+
+/* =====================================
+   CONVERTER NÚMERO BRASILEIRO
+===================================== */
+
+function converterNumero(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined
+    ) {
+
+        return 0;
+
+    }
+
+
+    valor = String(valor)
+        .replace(/\s/g, "")
+        .replace(/R\$/gi, "")
+        .replace(/\./g, "")
+        .replace(",", ".");
+
+
+    return parseFloat(valor) || 0;
+
+}
+
+
+
+/* =====================================
+   ARREDONDAMENTO
+===================================== */
+
+function arredondar(valor) {
+
+    return Number(
+        Number(valor).toFixed(2)
+    );
+
+}
+
+
+
+/* =====================================
+   LOCALIZAR VALORES MONETÁRIOS
+===================================== */
+
+function extrairValores(texto) {
+
+    const encontrados = [];
+
+    const regex =
+        /(?:R\$\s*)?\d{1,3}(?:\.\d{3})*,\d{2}/g;
+
+    const matches =
+        texto.match(regex) || [];
+
+
+    matches.forEach(valor => {
+
+        encontrados.push(
+            converterNumero(valor)
+        );
+
+    });
+
+
+    return encontrados;
+
+}
+
+
+
+/* =====================================
+   IDENTIFICAR VALOR APÓS UMA EXPRESSÃO
+===================================== */
+
+function valorDepoisDe(texto, expressao) {
+
+    const regex = new RegExp(
+
+        expressao +
+        "\\s*(?:[:=\\-])?\\s*" +
+        "(?:R\\$\\s*)?" +
+        "(\\d{1,3}(?:\\.\\d{3})*,\\d{2})",
+
+        "i"
+
+    );
+
+
+    const resultado =
+        texto.match(regex);
+
+
+    if (!resultado) {
+
+        return null;
+
+    }
+
+
+    return converterNumero(
+        resultado[1]
+    );
+
+}
+
+
+
+/* =====================================
+   NORMALIZAR TEXTO
+===================================== */
+
+function normalizarTexto(texto) {
+
+    return texto
+        .replace(/\r/g, "\n")
+        .replace(/[ \t]+/g, " ")
+        .replace(/\n+/g, "\n");
+
+}
+
+
+
+/* =====================================
+   EXTRAIR DADOS DO EXTRATO
+===================================== */
+
+function analisarExtrato(texto) {
+
+    texto =
+        normalizarTexto(texto);
+
+
+    const resultado = {
+
+        bruto: null,
+
+        inss: null,
+
+        irrf: null,
+
+        feriasLiquido: null,
+
+        decimoLiquido: null,
+
+        engajamentos: []
+
+    };
+
+
+
+    /* =====================================
+       BRUTO / MMO
+    ===================================== */
+
+    const padroesBruto = [
+
+        /MMO\s*Total[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i,
+
+        /MMO\s*TOTAL[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i,
+
+        /Mão\s*de\s*Obra[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i,
+
+        /Sal[aá]rio\s*Bruto[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i,
+
+        /Bruto[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i
+
+    ];
+
+
+    for (
+        const padrao of padroesBruto
+    ) {
+
+        const encontrado =
+            texto.match(padrao);
+
+
+        if (encontrado) {
+
+            resultado.bruto =
+                converterNumero(
+                    encontrado[1]
+                );
+
+            break;
+
+        }
+
+    }
+
+
+
+    /* =====================================
+       INSS
+    ===================================== */
+
+    const padroesInss = [
+
+        /INSS[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i,
+
+        /I\.N\.S\.S\.[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i
+
+    ];
+
+
+    for (
+        const padrao of padroesInss
+    ) {
+
+        const encontrado =
+            texto.match(padrao);
+
+
+        if (encontrado) {
+
+            resultado.inss =
+                converterNumero(
+                    encontrado[1]
+                );
+
+            break;
+
+        }
+
+    }
+
+
+
+    /* =====================================
+       IRRF / IRPF
+    ===================================== */
+
+    const padroesIrrf = [
+
+        /IRRF[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i,
+
+        /IRPF[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i,
+
+        /Imposto\s*de\s*Renda[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i
+
+    ];
+
+
+    for (
+        const padrao of padroesIrrf
+    ) {
+
+        const encontrado =
+            texto.match(padrao);
+
+
+        if (encontrado) {
+
+            resultado.irrf =
+                converterNumero(
+                    encontrado[1]
+                );
+
+            break;
+
+        }
+
+    }
+
+
+
+    /* =====================================
+       FÉRIAS
+    ===================================== */
+
+    const feriasLiquidas = [
+
+        /F[ée]rias\s*L[ií]quidas[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i,
+
+        /F[ée]rias[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i
+
+    ];
+
+
+    for (
+        const padrao of feriasLiquidas
+    ) {
+
+        const encontrado =
+            texto.match(padrao);
+
+
+        if (encontrado) {
+
+            resultado.feriasLiquido =
+                converterNumero(
+                    encontrado[1]
+                );
+
+            break;
+
+        }
+
+    }
+
+
+
+    /* =====================================
+       13º SALÁRIO
+    ===================================== */
+
+    const decimo = [
+
+        /13[ºo°]?\s*sal[aá]rio\s*l[ií]quido[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i,
+
+        /13[ºo°]?[^\d]*(\d{1,3}(?:\.\d{3})*,\d{2})/i
+
+    ];
+
+
+    for (
+        const padrao of decimo
+    ) {
+
+        const encontrado =
+            texto.match(padrao);
+
+
+        if (encontrado) {
+
+            resultado.decimoLiquido =
+                converterNumero(
+                    encontrado[1]
+                );
+
+            break;
+
+        }
+
+    }
+
+
+
+    /* =====================================
+       ENGAJAMENTOS — S.BRUTO
+
+       Procura linhas como:
+
+       S.Bruto 316,98
+       S. Bruto 316,98
+       S.Bruto: 316,98
+    ===================================== */
+
+    const regexEngajamento =
+        /S\s*\.\s*Bruto\s*[:=\-]?\s*(\d{1,3}(?:\.\d{3})*,\d{2})/gi;
+
+
+    let match;
+
+
+    while (
+        (match =
+            regexEngajamento.exec(texto)) !== null
+    ) {
+
+        const valor =
+            converterNumero(
+                match[1]
+            );
+
+
+        if (valor > 0) {
+
+            resultado.engajamentos.push(
+                valor
+            );
+
+        }
+
+    }
+
+
+
+    /* =====================================
+       EVITAR DUPLICIDADE
+    ===================================== */
+
+    resultado.engajamentos =
+        resultado.engajamentos.filter(
+            (valor, index, array) =>
+                index === array.indexOf(valor)
+        );
+
+
+    return resultado;
+
+}
+
+
+
+/* =====================================
+   LER TXT
+===================================== */
+
+async function lerTXT(file) {
+
+    return await file.text();
+
+}
+
+
+
+/* =====================================
+   LER PDF
+===================================== */
+
+async function lerPDF(file) {
+
+    if (!window.pdfjsLib) {
+
+        throw new Error(
+            "Biblioteca PDF.js não carregada."
+        );
+
+    }
+
+
+    const arrayBuffer =
+        await file.arrayBuffer();
+
+
+    const pdf =
+        await pdfjsLib.getDocument({
+            data: arrayBuffer
+        }).promise;
+
+
+    let texto = "";
+
+
+    for (
+        let pagina = 1;
+        pagina <= pdf.numPages;
+        pagina++
+    ) {
+
+        const page =
+            await pdf.getPage(pagina);
+
+
+        const content =
+            await page.getTextContent();
+
+
+        const linhas =
+            content.items
+                .map(item => item.str)
+                .join(" ");
+
+
+        texto +=
+            "\n" +
+            linhas;
+
+    }
+
+
+    return texto;
+
+}
+
+
+
+/* =====================================
+   PROCESSAR ARQUIVO
+===================================== */
+
+async function processarExtrato(file) {
+
+    const status =
+        document.getElementById(
+            "statusExtrato"
+        );
+
+
+    status.style.display =
+        "block";
+
+
+    status.className =
+        "info";
+
+
+    status.innerHTML =
+        "Lendo o extrato...";
+
+
+    try {
+
+        let texto = "";
+
+
+        if (
+            file.name
+                .toLowerCase()
+                .endsWith(".pdf")
+        ) {
+
+            texto =
+                await lerPDF(file);
+
+        }
+
+        else {
+
+            texto =
+                await lerTXT(file);
+
+        }
+
+
+        dadosExtrato =
+            analisarExtrato(texto);
+
+
+        const encontrados = [];
+
+
+        if (dadosExtrato.bruto !== null) {
+
+            encontrados.push(
+                "MMO/bruto: " +
+                dinheiro(dadosExtrato.bruto)
+            );
+
+            document.getElementById(
+                "bruto"
+            ).value =
+                dadosExtrato.bruto.toLocaleString(
+                    "pt-BR",
+                    {
+                        minimumFractionDigits: 2
+                    }
+                );
+
+        }
+
+
+        if (dadosExtrato.inss !== null) {
+
+            encontrados.push(
+                "INSS: " +
+                dinheiro(dadosExtrato.inss)
+            );
+
+        }
+
+
+        if (dadosExtrato.irrf !== null) {
+
+            encontrados.push(
+                "IRRF: " +
+                dinheiro(dadosExtrato.irrf)
+            );
+
+        }
+
+
+        if (
+            dadosExtrato.engajamentos.length
+            > 0
+        ) {
+
+            encontrados.push(
+
+                dadosExtrato.engajamentos.length +
+                " engajamento(s)"
+
+            );
+
+        }
+
+
+        if (
+            encontrados.length > 0
+        ) {
+
+            status.className =
+                "info sucesso";
+
+
+            status.innerHTML =
+                "<strong>Dados encontrados:</strong><br>" +
+                encontrados.join("<br>");
+
+        }
+
+        else {
+
+            status.className =
+                "info alerta";
+
+
+            status.innerHTML =
+                "<strong>Não foi possível identificar automaticamente os dados.</strong><br>" +
+                "Informe o bruto manualmente.";
+
+        }
+
+
+    }
+
+    catch (erro) {
+
+        console.error(erro);
+
+
+        status.className =
+            "info alerta";
+
+
+        status.innerHTML =
+            "Erro ao ler o arquivo. " +
+            "Você pode informar o bruto manualmente.";
+
+    }
+
+}
+
+
+
+/* =====================================
+   EVENTO DO EXTRATO
+===================================== */
+
+document
+    .getElementById("extrato")
+    .addEventListener(
+        "change",
+        function() {
+
+            if (
+                this.files &&
+                this.files.length > 0
+            ) {
+
+                processarExtrato(
+                    this.files[0]
+                );
+
+            }
+
+        }
+    );
+
+
+
+/* =====================================
+   INSS 2026
+   TABELA PROGRESSIVA
+===================================== */
+
+function calcularINSSProgressivo(
+    salario
+) {
+
+    salario =
+        Number(salario) || 0;
+
+
+    if (salario <= 0) {
+
+        return 0;
+
+    }
+
+
+    const FAIXA1 = 1621.00;
+
+    const FAIXA2 = 2902.84;
+
+    const FAIXA3 = 4354.27;
+
+    const TETO = 8475.55;
+
+
+    let inss = 0;
+
+
+
+    if (
+        salario <= FAIXA1
+    ) {
+
+        inss =
+            salario * 0.075;
+
+    }
+
+
+    else if (
+        salario <= FAIXA2
+    ) {
+
+        inss =
+            FAIXA1 * 0.075 +
+            (
+                salario - FAIXA1
+            ) * 0.09;
+
+    }
+
+
+    else if (
+        salario <= FAIXA3
+    ) {
+
+        inss =
+            FAIXA1 * 0.075 +
+
+            (
+                FAIXA2 - FAIXA1
+            ) * 0.09 +
+
+            (
+                salario - FAIXA2
+            ) * 0.12;
+
+    }
+
+
+    else if (
+        salario <= TETO
+    ) {
+
+        inss =
+            FAIXA1 * 0.075 +
+
+            (
+                FAIXA2 - FAIXA1
+            ) * 0.09 +
+
+            (
+                FAIXA3 - FAIXA2
+            ) * 0.12 +
+
+            (
+                salario - FAIXA3
+            ) * 0.14;
+
+    }
+
+
+    else {
+
+        inss =
+            FAIXA1 * 0.075 +
+
+            (
+                FAIXA2 - FAIXA1
+            ) * 0.09 +
+
+            (
+                FAIXA3 - FAIXA2
+            ) * 0.12 +
+
+            (
+                TETO - FAIXA3
+            ) * 0.14;
+
+    }
+
+
+    return arredondar(inss);
+
+}
+
+
+
+/* =====================================
+   MÉTODO OGMO
+
+   Cálculo acumulado por engajamento
+===================================== */
+
+function calcularINSSOGMO(
+    engajamentos
+) {
+
+    let acumuladoBruto = 0;
+
+    let acumuladoINSS = 0;
+
+    const historico = [];
+
+
+    engajamentos.forEach(
+        (valor, index) => {
+
+            const brutoAnterior =
+                acumuladoBruto;
+
+
+            acumuladoBruto +=
+                Number(valor);
+
+
+            const inssAnterior =
+                calcularINSSProgressivo(
+                    brutoAnterior
+                );
+
+
+            const inssAtual =
+                calcularINSSProgressivo(
+                    acumuladoBruto
+                );
+
+
+            const descontoDia =
+                arredondar(
+                    inssAtual -
+                    inssAnterior
+                );
+
+
+            acumuladoINSS +=
+                descontoDia;
+
+
+            historico.push({
+
+                engajamento:
+                    index + 1,
+
+                bruto:
+                    arredondar(valor),
+
+                acumulado:
+                    arredondar(
+                        acumuladoBruto
+                    ),
+
+                inss:
+                    descontoDia
+
+            });
+
+        }
+    );
+
+
+    return {
+
+        brutoTotal:
+            arredondar(
+                acumuladoBruto
+            ),
+
+        inssTotal:
+            arredondar(
+                acumuladoINSS
+            ),
+
+        historico:
+            historico
+
+    };
+
+}
+
+
+
+/* =====================================
+   FUNÇÃO PRINCIPAL DO INSS
+
+   Mantém o mesmo nome usado
+   pelo restante da calculadora.
+===================================== */
+
+function calcularINSS(
+    salario
+) {
+
+    return calcularINSSProgressivo(
+        salario
+    );
+
+}
+
+
+
+/* =====================================
+   IRPF 2026
+
+   REGRA DA CALCULADORA:
+
+   BRUTO
+   +
+   FÉRIAS LÍQUIDAS
+   +
+   13º LÍQUIDO
+
+   A redução de 2026 é aplicada
+   quando o total mensal passa
+   da faixa de R$ 5.000.
+===================================== */
+
+function calcularIRPF(
+    rendimentos
+) {
+
+    rendimentos =
+        Number(rendimentos) || 0;
+
+
+    if (
+        rendimentos <= 5000
+    ) {
+
+        return 0;
+
+    }
+
+
+    /*
+       Tabela progressiva.
+    */
+
+    const descontoSimplificado =
+        607.20;
+
+
+    const baseCalculo =
+        Math.max(
+            0,
+            rendimentos -
+            descontoSimplificado
+        );
+
+
+    let imposto = 0;
+
+
+    if (
+        baseCalculo <= 2428.80
+    ) {
+
+        imposto = 0;
+
+    }
+
+
+    else if (
+        baseCalculo <= 2826.65
+    ) {
+
+        imposto =
+            baseCalculo * 0.075 -
+            182.16;
+
+    }
+
+
+    else if (
+        baseCalculo <= 3751.05
+    ) {
+
+        imposto =
+            baseCalculo * 0.15 -
+            394.16;
+
+    }
+
+
+    else if (
+        baseCalculo <= 4664.68
+    ) {
+
+        imposto =
+            baseCalculo * 0.225 -
+            675.49;
+
+    }
+
+
+    else {
+
+        imposto =
+            baseCalculo * 0.275 -
+            908.73;
+
+    }
+
+
+    /*
+       Redução de 2026.
+    */
+
+    let reducao = 0;
+
+
+    if (
+        rendimentos <= 7350
+    ) {
+
+        reducao =
+            978.62 -
+            (
+                0.133145 *
+                rendimentos
+            );
+
+
+        reducao =
+            Math.max(
+                0,
+                reducao
+            );
+
+    }
+
+
+    imposto =
+        Math.max(
+            0,
+            imposto -
+            reducao
+        );
+
+
+    return arredondar(
+        imposto
+    );
+
+}
+
+
+
+/* =====================================
+   CALCULADORA
+===================================== */
+
+function calcular() {
+
+
+    let bruto =
+        converterNumero(
+            document.getElementById(
+                "bruto"
+            ).value
+        );
+
+
+    const trabalhos =
+        parseInt(
+            document.getElementById(
+                "trabalhos"
+            ).value
+        ) || 0;
+
+
+
+    /*
+       Se o extrato encontrou
+       um bruto válido, ele pode
+       ser usado automaticamente.
+    */
+
+    if (
+        bruto <= 0 &&
+        dadosExtrato.bruto !== null
+    ) {
+
+        bruto =
+            dadosExtrato.bruto;
+
+    }
+
+
+
+    if (
+        bruto <= 0
+    ) {
+
+        alert(
+            "Informe o valor bruto ou anexe um extrato válido."
+        );
+
+        return;
+
+    }
+
+
+
+    if (
+        trabalhos <= 0
+    ) {
+
+        alert(
+            "Informe o número de trabalhos."
+        );
+
+        return;
+
+    }
+
+
+
+    /* =====================================
+       DAS
+    ===================================== */
+
+    const das =
+        bruto * 0.08;
+
+
+
+    /* =====================================
+       ASSISTÊNCIA MÉDICA
+    ===================================== */
+
+    const saude =
+        bruto * 0.06;
+
+
+
+    /* =====================================
+       INSS CONSOLIDADO
+    ===================================== */
+
+    const inssConsolidado =
+        calcularINSSProgressivo(
+            bruto
+        );
+
+
+
+    /* =====================================
+       INSS PELO MÉTODO OGMO
+    ===================================== */
+
+    let inssOgmo =
+        null;
+
+
+    let resultadoOgmo =
+        null;
+
+
+    if (
+        dadosExtrato.engajamentos &&
+        dadosExtrato.engajamentos.length
+        > 0
+    ) {
+
+        resultadoOgmo =
+            calcularINSSOGMO(
+                dadosExtrato.engajamentos
+            );
+
+
+        inssOgmo =
+            resultadoOgmo.inssTotal;
+
+    }
+
+
+
+    /*
+       Para o cálculo principal:
+
+       Se existem engajamentos no extrato,
+       utiliza o método OGMO.
+
+       Caso contrário, utiliza o
+       cálculo consolidado.
+    */
+
+    let inss;
+
+
+    let metodoInss;
+
+
+    if (
+        inssOgmo !== null
+    ) {
+
+        inss =
+            inssOgmo;
+
+        metodoInss =
+            "Acumulado por engajamento — OGMO";
+
+    }
+
+    else {
+
+        inss =
+            inssConsolidado;
+
+        metodoInss =
+            "Consolidado mensal";
+
+    }
+
+
+
+    /* =====================================
+       FÉRIAS
+
+       Mantido sem alteração
+       da estrutura original.
+    ===================================== */
+
+    let feriasLiquido;
+
+
+    if (
+        dadosExtrato.feriasLiquido !== null
+    ) {
+
+        feriasLiquido =
+            dadosExtrato.feriasLiquido;
+
+    }
+
+    else {
+
+        const feriasBruto =
+            bruto *
+            (
+                512.27 /
+                4226.79
+            );
+
+
+        feriasLiquido =
+            feriasBruto *
+            (
+                431.77 /
+                512.27
+            );
+
+    }
+
+
+
+    /* =====================================
+       13º
+
+       Mantido sem alteração
+       da estrutura original.
+    ===================================== */
+
+    let decimoLiquido;
+
+
+    if (
+        dadosExtrato.decimoLiquido !== null
+    ) {
+
+        decimoLiquido =
+            dadosExtrato.decimoLiquido;
+
+    }
+
+    else {
+
+        const decimoBruto =
+            bruto *
+            (
+                384.22 /
+                4226.79
+            );
+
+
+        const inssDecimo =
+            decimoBruto *
+            (
+                34.26 /
+                384.22
+            );
+
+
+        const outrosDecimo =
+            decimoBruto *
+            (
+                27.90 /
+                384.22
+            );
+
+
+        decimoLiquido =
+            decimoBruto -
+            inssDecimo -
+            outrosDecimo;
+
+    }
+
+
+
+    /* =====================================
+       TRANSPORTE
+    ===================================== */
+
+    const transportePorTrabalho =
+
+        (
+            (
+                99.62 /
+                10
+            ) +
+
+            (
+                119.56 /
+                12
+            )
+        ) / 2;
+
+
+    const transporte =
+        trabalhos *
+        transportePorTrabalho;
+
+
+
+    /* =====================================
+       ALIMENTAÇÃO
+    ===================================== */
+
+    const refeicaoPorTrabalho =
+
+        (
+            (
+                178.20 /
+                10
+            ) +
+
+            (
+                214.00 /
+                12
+            )
+        ) / 2;
+
+
+    const refeicao =
+        trabalhos *
+        refeicaoPorTrabalho;
+
+
+
+    /* =====================================
+       1º DEPÓSITO
+    ===================================== */
+
+    const deposito1 =
+
+        transporte +
+        refeicao +
+        saude;
+
+
+
+    /* =====================================
+       2º DEPÓSITO
+    ===================================== */
+
+    const deposito2 =
+
+        feriasLiquido +
+        decimoLiquido;
+
+
+
+    /* =====================================
+       SOMATÓRIO DOS DEPÓSITOS
+    ===================================== */
+
+    const somaDepositos =
+
+        deposito1 +
+        deposito2;
+
+
+
+    /* =====================================
+       BASE IRPF
+
+       BRUTO
+       +
+       FÉRIAS LÍQUIDAS
+       +
+       13º LÍQUIDO
+    ===================================== */
+
+    const baseIR =
+
+        bruto +
+        feriasLiquido +
+        decimoLiquido;
+
+
+
+    const irpf =
+        calcularIRPF(
+            baseIR
+        );
+
+
+
+    /* =====================================
+       LÍQUIDO DO SALÁRIO
+    ===================================== */
+
+    const liquidoSalario =
+
+        bruto -
+        inss -
+        das -
+        irpf;
+
+
+
+    /* =====================================
+       TOTAL EM DINHEIRO
+    ===================================== */
+
+    const total =
+
+        liquidoSalario +
+        somaDepositos;
+
+
+
+    /* =====================================
+       FGTS
+
+       Mantido sem alteração.
+    ===================================== */
+
+    const fgts =
+
+        bruto *
+        (
+            409.86 /
+            4226.79
+        );
+
+
+
+    /* =====================================
+       COMPARAÇÃO INSS
+    ===================================== */
+
+    let diferencaInss = null;
+
+
+    if (
+        dadosExtrato.inss !== null
+    ) {
+
+        diferencaInss =
+            arredondar(
+                inss -
+                dadosExtrato.inss
+            );
+
+    }
+
+
+
+    /* =====================================
+       COMPARAÇÃO IRRF
+    ===================================== */
+
+    let diferencaIrrf = null;
+
+
+    if (
+        dadosExtrato.irrf !== null
+    ) {
+
+        diferencaIrrf =
+            arredondar(
+                irpf -
+                dadosExtrato.irrf
+            );
+
+    }
+
+
+
+    /* =====================================
+       EXIBIR
+    ===================================== */
+
+    document.getElementById(
+        "rBruto"
+    ).innerText =
+        dinheiro(bruto);
+
+
+    document.getElementById(
+        "rInss"
+    ).innerText =
+        "− " +
+        dinheiro(inss);
+
+
+    document.getElementById(
+        "rDas"
+    ).innerText =
+        "− " +
+        dinheiro(das);
+
+
+    document.getElementById(
+        "rIrrf"
+    ).innerText =
+        "− " +
+        dinheiro(irpf);
+
+
+    document.getElementById(
+        "rLiquido"
+    ).innerText =
+        dinheiro(
+            liquidoSalario
+        );
+
+
+
+    /* =====================================
+       INSS DETALHADO
+    ===================================== */
+
+    document.getElementById(
+        "rMetodoInss"
+    ).innerText =
+        metodoInss;
+
+
+    document.getElementById(
+        "rInssConsolidado"
+    ).innerText =
+        dinheiro(
+            inssConsolidado
+        );
+
+
+    document.getElementById(
+        "rInssOgmo"
+    ).innerText =
+        inssOgmo === null
+            ? "Não disponível"
+            : dinheiro(inssOgmo);
+
+
+    document.getElementById(
+        "rInssExtrato"
+    ).innerText =
+        dadosExtrato.inss === null
+            ? "Não informado"
+            : dinheiro(
+                dadosExtrato.inss
+            );
+
+
+    document.getElementById(
+        "rDiferencaInss"
+    ).innerText =
+        diferencaInss === null
+            ? "Não disponível"
+            : dinheiro(
+                diferencaInss
+            );
+
+
+
+    /* =====================================
+       DETALHAMENTO OGMO
+    ===================================== */
+
+    if (
+        resultadoOgmo !== null
+    ) {
+
+        document.getElementById(
+            "detalhamentoOgmo"
+        ).style.display =
+            "block";
+
+
+        const lista =
+            document.getElementById(
+                "listaEngajamentos"
+            );
+
+
+        lista.innerHTML = "";
+
+
+        resultadoOgmo.historico
+            .forEach(item => {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "engajamento";
+
+
+                div.innerHTML =
+
+                    "<span>" +
+
+                    item.engajamento +
+
+                    "º — " +
+
+                    dinheiro(item.bruto) +
+
+                    "</span>" +
+
+                    "<strong>" +
+
+                    dinheiro(item.inss) +
+
+                    "</strong>";
+
+
+                lista.appendChild(div);
+
+            });
+
+    }
+
+    else {
+
+        document.getElementById(
+            "detalhamentoOgmo"
+        ).style.display =
+            "none";
+
+    }
+
+
+
+    /* =====================================
+       1º DEPÓSITO
+    ===================================== */
+
+    document.getElementById(
+        "rTransporte"
+    ).innerText =
+        dinheiro(
+            transporte
+        );
+
+
+    document.getElementById(
+        "rRefeicao"
+    ).innerText =
+        dinheiro(
+            refeicao
+        );
+
+
+    document.getElementById(
+        "rSaude"
+    ).innerText =
+        dinheiro(
+            saude
+        );
+
+
+    document.getElementById(
+        "rDeposito1"
+    ).innerText =
+        dinheiro(
+            deposito1
+        );
+
+
+
+    /* =====================================
+       2º DEPÓSITO
+    ===================================== */
+
+    document.getElementById(
+        "rFeriasLiquido"
+    ).innerText =
+        dinheiro(
+            feriasLiquido
+        );
+
+
+    document.getElementById(
+        "rDecimoLiquido"
+    ).innerText =
+        dinheiro(
+            decimoLiquido
+        );
+
+
+    document.getElementById(
+        "rDeposito2"
+    ).innerText =
+        dinheiro(
+            deposito2
+        );
+
+
+
+    /* =====================================
+       SOMATÓRIO
+    ===================================== */
+
+    document.getElementById(
+        "rSomaDepositos"
+    ).innerText =
+        dinheiro(
+            somaDepositos
+        );
+
+
+
+    /* =====================================
+       IRPF
+    ===================================== */
+
+    document.getElementById(
+        "rBaseSalario"
+    ).innerText =
+        dinheiro(
+            bruto
+        );
+
+
+    document.getElementById(
+        "rBaseFerias"
+    ).innerText =
+        dinheiro(
+            feriasLiquido
+        );
+
+
+    document.getElementById(
+        "rBaseDecimo"
+    ).innerText =
+        dinheiro(
+            decimoLiquido
+        );
+
+
+    document.getElementById(
+        "rBaseIR"
+    ).innerText =
+        dinheiro(
+            baseIR
+        );
+
+
+    document.getElementById(
+        "rIrrfDetalhado"
+    ).innerText =
+        dinheiro(
+            irpf
+        );
+
+
+    document.getElementById(
+        "rIrrfExtrato"
+    ).innerText =
+        dadosExtrato.irrf === null
+            ? "Não informado"
+            : dinheiro(
+                dadosExtrato.irrf
+            );
+
+
+    document.getElementById(
+        "rDiferencaIrrf"
+    ).innerText =
+        diferencaIrrf === null
+            ? "Não disponível"
+            : dinheiro(
+                diferencaIrrf
+            );
+
+
+
+    /* =====================================
+       RESUMO
+    ===================================== */
+
+    document.getElementById(
+        "rResumoSalario"
+    ).innerText =
+        dinheiro(
+            liquidoSalario
+        );
+
+
+    document.getElementById(
+        "rResumoDeposito1"
+    ).innerText =
+        dinheiro(
+            deposito1
+        );
+
+
+    document.getElementById(
+        "rResumoDeposito2"
+    ).innerText =
+        dinheiro(
+            deposito2
+        );
+
+
+    document.getElementById(
+        "rResumoSomaDepositos"
+    ).innerText =
+        dinheiro(
+            somaDepositos
+        );
+
+
+    document.getElementById(
+        "rTotal"
+    ).innerText =
+        dinheiro(
+            total
+        );
+
+
+    document.getElementById(
+        "rFgts"
+    ).innerText =
+        dinheiro(
+            fgts
+        );
+
+
+
+    /* =====================================
+       MOSTRAR RESULTADO
+    ===================================== */
+
+    document.getElementById(
+        "resultado"
+    ).style.display =
+        "block";
+
+}
+
+</script>
+
+
+</body>
+
+</html>
